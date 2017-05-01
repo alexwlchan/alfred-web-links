@@ -51,7 +51,7 @@ for idx, resource in enumerate(aws_resources):
         'config': {
             'browser': '',
             'spaces': '',
-            'url': f'https://{aws_region}.console.aws.amazon.com/{resource}',
+            'url': f'https://{aws_region}.console.aws.amazon.com/{resource.lower()}',
             'utf8': True,
         },
         'type': 'alfred.workflow.action.openurl',
