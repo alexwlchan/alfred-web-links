@@ -9,6 +9,8 @@ import tempfile
 import uuid
 import zipfile
 
+from PIL import Image
+
 aws_region = 'eu-west-1'
 
 data = {
@@ -86,8 +88,26 @@ for idx, resource in enumerate(aws_resources):
         'version': 1,
     }
 
+    if not os.path.exists(os.path.join('AWS shortcuts', f'{resource}_resized.png')):
+        base_icon = Image.open(os.path.join('AWS shortcuts', f'{resource}.png'))
+        width, height = base_icon.size
+        if width == height:
+            shutil.copyfile(
+                os.path.join('AWS shortcuts', f'{resource}.png'),
+                os.path.join('AWS shortcuts', f'{resource}_resized.png')
+            )
+        elif width > height:
+            new = Image.new('RGBA', (width, width))
+            new.paste(base_icon, (0, (width - height) // 2), base_icon)
+            new.save(os.path.join('AWS shortcuts', f'{resource}_resized.png'))
+        else:
+            new = Image.new('RGBA', (height, height))
+            new.paste(base_icon, ((height - width) // 2, 0), base_icon)
+            new.save(os.path.join('AWS shortcuts', f'{resource}_resized.png'))
+        # assert False
+
     shutil.copyfile(
-        os.path.join('AWS shortcuts', f'{resource}.png'),
+        os.path.join('AWS shortcuts', f'{resource}_resized.png'),
         os.path.join(t_dir, f'{trigger_object["uid"]}.png')
     )
 
