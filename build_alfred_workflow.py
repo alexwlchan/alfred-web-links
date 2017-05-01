@@ -69,11 +69,11 @@ for idx, resource in enumerate(aws_resources):
 
     data['uidata'][trigger_object['uid']] = {
         'xpos': 50 + (400 * (idx % 2)),
-        'ypos': 50 + 300 * (2 * idx % 2),
+        'ypos': 50 + 75 * (idx - idx % 2),
     }
     data['uidata'][browser_object['uid']] = {
         'xpos': 250 + (400 * (idx % 2)),
-        'ypos': 50 + 300 * (2 * idx % 2),
+        'ypos': 50 + 75 * (idx - idx % 2),
     }
 
     data['connections'][trigger_object['uid']] = [
