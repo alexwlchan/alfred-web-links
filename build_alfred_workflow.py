@@ -4,6 +4,8 @@
 import collections
 import os
 import plistlib
+import shutil
+import tempfile
 import uuid
 import zipfile
 
@@ -28,6 +30,8 @@ aws_resources = sorted([
     for f in os.listdir('AWS shortcuts')
     if f.endswith('.png')
 ])
+
+t_dir = tempfile.mkdtemp()
 
 for idx, resource in enumerate(aws_resources):
     trigger_object = {
@@ -55,6 +59,11 @@ for idx, resource in enumerate(aws_resources):
         'version': 1,
     }
 
+    shutil.copyfile(
+        os.path.join('AWS shortcuts', f'{resource}.png'),
+        os.path.join(t_dir, f'{trigger_object["uid"]}.png')
+    )
+
     data['objects'].append(trigger_object)
     data['objects'].append(browser_object)
 
@@ -76,13 +85,16 @@ for idx, resource in enumerate(aws_resources):
         }
     ]
 
+shutil.copyfile('AWS-icon.png', os.path.join(t_dir, 'Icon.png'))
+plistlib.writePlist(data, os.path.join(t_dir, 'info.plist'))
 
-os.chdir('AWS shortcuts')
-plistlib.writePlist(data, 'info.plist')
+try:
+    os.unlink('AWS shortcuts.alfredworkflow')
+except FileNotFoundError:
+    pass
 
-os.unlink('../AWS shortcuts.alfredworkflow')
-with zipfile.ZipFile('../AWS shortcuts.alfredworkflow', 'w') as package:
-
+with zipfile.ZipFile('AWS shortcuts.alfredworkflow', 'w') as package:
+    os.chdir(t_dir)
     for filename in os.listdir('.'):
         if filename.startswith('.'):
             continue
