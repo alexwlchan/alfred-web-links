@@ -31,15 +31,42 @@ aws_resources = sorted([
     if f.endswith('.png')
 ])
 
+names = {
+    'EMR': {
+        'title': 'Elastic MapReduce',
+        'slug': 'elasticmapreduce',
+    },
+    'ES': {
+        'title': 'Elasticsearch Service',
+    },
+    'AppStream': {
+        'slug': 'appstream2',
+    },
+    'ECS': {
+        'title': 'EC2 Container Service',
+    },
+    'ECR': {
+        'title': 'EC2 Container Registry',
+    },
+}
+
 t_dir = tempfile.mkdtemp()
 
 for idx, resource in enumerate(aws_resources):
+
+    shortcut = names.get(resource, {}).get('shortcut', resource.lower())
+    slug = names.get(resource, {}).get('slug', resource.lower())
+    url = f'https://{aws_region}.console.aws.amazon.com/{slug}'
+    if resource == 'ECR':
+        url = 'https://{aws_region}.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories'
+    title = names.get(resource, {}).get('title', resource)
+
     trigger_object = {
         'config': {
             'argumenttype': 2,
-            'keyword': resource.lower(),
+            'keyword': shortcut,
             'subtext': '',
-            'text': resource,
+            'text': title,
             'withspace': False,
         },
         'type': 'alfred.workflow.input.keyword',
@@ -51,7 +78,7 @@ for idx, resource in enumerate(aws_resources):
         'config': {
             'browser': '',
             'spaces': '',
-            'url': f'https://{aws_region}.console.aws.amazon.com/{resource.lower()}',
+            'url': url,
             'utf8': True,
         },
         'type': 'alfred.workflow.action.openurl',
