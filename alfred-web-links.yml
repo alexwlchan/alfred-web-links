@@ -1,7 +1,11 @@
-bundleid: com.alexwlchan.alfred-shortcuts
+bundleid: com.alexwlchan.alfred-web-links
+
+createdby: Alex Chan
 version: 0.1.0
 
-shortcuts:
+icon: globe.png
+
+links:
 
   # Links to the AWS console
   - title:    CloudWatch

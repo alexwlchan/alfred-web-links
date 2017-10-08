@@ -11,118 +11,135 @@ from PIL import Image
 import yaml
 
 
-def build_alfred_workflow(src_dir, name):
-    """
-    Given a directory of source files for an Alfred Workflow, assemble them
-    into a .alfredworkflow bundle and return its path.
-    """
-    shutil.make_archive(
-        base_name=f'{name}.alfredworkflow',
-        format='zip',
-        root_dir=src_dir
-    )
-    shutil.move(f'{name}.alfredworkflow.zip', f'{name}.alfredworkflow')
-    return f'{name}.alfredworkflow'
+class AlfredWorkflow:
 
+    def __init__(self, path):
+        self.path = path
+        self.yaml_data = yaml.load(open(path))
+        self.tmpdir = tempfile.mkdtemp()
+        self.metadata = {}
 
-def load_initial_data(yaml_data):
-    """
-    Given some YAML metadata, build the package-level metadata dict.
-    """
-    defaults = {
-        'bundleid': 'edu.self.alfred-shortcuts',
-        'category': 'Internet',
-        'connections': {},
-        'createdby': '',
-        'description': 'Shortcut links for Alfred',
-        'name': 'Alfred shortcuts',
-        'objects': [],
-        'readme': '',
-        'uidata': {},
-        'version': '0.0.1',
-        'webaddress': 'https://github.com/alexwlchan/alfred-shortcuts',
-    }
+    def tmpfile(self, path):
+        return os.path.join(self.tmpdir, path)
 
-    return {
-        key: yaml_data.get(key, defaults[key]) for key in defaults
-    }
+    def build(self, name):
+        self.metadata = self._get_package_metadata()
 
+        for idx, link_data in enumerate(self.yaml_data['links']):
+            self._add_link(idx=idx, link_data=link_data)
 
-aws_region = 'eu-west-1'
+        self._copy_workflow_icon()
+        plistlib.writePlist(self.metadata, self.tmpfile('Info.plist'))
+        self._build_alfred_workflow_zip(name=name)
 
-yaml_data = yaml.load(open('alfred-shortcuts.yml'))
-data = load_initial_data(yaml_data)
-
-t_dir = tempfile.mkdtemp()
-
-for idx, shortcut_data in enumerate(yaml_data.get('shortcuts')):
-    shortcut = shortcut_data['shortcut']
-    url = shortcut_data['url']
-    title = shortcut_data['title']
-
-    trigger_object = {
-        'config': {
-            'argumenttype': 2,
-            'keyword': shortcut,
-            'subtext': '',
-            'text': title,
-            'withspace': False,
-        },
-        'type': 'alfred.workflow.input.keyword',
-        'uid': str(uuid.uuid4()).upper(),
-        'version': 1,
-    }
-
-    browser_object = {
-        'config': {
-            'browser': '',
-            'spaces': '',
-            'url': url,
-            'utf8': True,
-        },
-        'type': 'alfred.workflow.action.openurl',
-        'uid': str(uuid.uuid4()).upper(),
-        'version': 1,
-    }
-
-    icon = os.path.join('icons', shortcut_data['icon'])
-    resized = os.path.join(t_dir, f'{trigger_object["uid"]}.png')
-    if not os.path.exists(resized):
-        base_icon = Image.open(icon)
-        width, height = base_icon.size
-        if width == height:
-            shutil.copyfile(icon, resized)
-        elif width > height:
-            new = Image.new('RGBA', (width, width))
-            new.paste(base_icon, (0, (width - height) // 2), base_icon)
-            new.save(resized)
+    def _copy_workflow_icon(self):
+        try:
+            icon = self.yaml_data['icon']
+        except KeyError:
+            pass
         else:
-            new = Image.new('RGBA', (height, height))
-            new.paste(base_icon, ((height - width) // 2, 0), base_icon)
-            new.save(resized)
+            icon_path = os.path.join('icons', icon)
+            shutil.copyfile(icon_path, self.tmpfile('Icon.png'))
 
-    data['objects'].append(trigger_object)
-    data['objects'].append(browser_object)
-
-    data['uidata'][trigger_object['uid']] = {
-        'xpos': 150,
-        'ypos': 50 + 120 * idx,
-    }
-    data['uidata'][browser_object['uid']] = {
-        'xpos': 600,
-        'ypos': 50 + 120 * idx,
-    }
-
-    data['connections'][trigger_object['uid']] = [
-        {
-            'destinationuid': browser_object['uid'],
-            'modifiers': 0,
-            'modifiersubtext': '',
-            'vitoclose': False,
+    def _get_package_metadata(self):
+        defaults = {
+            'bundleid': 'edu.self.alfred-web-links',
+            'category': 'Internet',
+            'connections': {},
+            'createdby': '',
+            'description': 'Web links links for Alfred',
+            'name': 'Alfred web links',
+            'objects': [],
+            'readme': '',
+            'uidata': {},
+            'version': '0.0.1',
+            'webaddress': 'https://github.com/alexwlchan/alfred-web-links',
         }
-    ]
 
-shutil.copyfile('AWS-icon.png', os.path.join(t_dir, 'Icon.png'))
-plistlib.writePlist(data, os.path.join(t_dir, 'info.plist'))
+        return {
+            key: self.yaml_data.get(key, defaults[key]) for key in defaults
+        }
 
-build_alfred_workflow(src_dir=t_dir, name='shortcuts')
+    def _add_link(self, idx, link_data):
+        shortcut = link_data['shortcut']
+        url = link_data['url']
+        title = link_data['title']
+
+        trigger_object = {
+            'config': {
+                'argumenttype': 2,
+                'keyword': shortcut,
+                'subtext': '',
+                'text': title,
+                'withspace': False,
+            },
+            'type': 'alfred.workflow.input.keyword',
+            'uid': str(uuid.uuid4()).upper(),
+            'version': 1,
+        }
+
+        browser_object = {
+            'config': {
+                'browser': '',
+                'spaces': '',
+                'url': url,
+                'utf8': True,
+            },
+            'type': 'alfred.workflow.action.openurl',
+            'uid': str(uuid.uuid4()).upper(),
+            'version': 1,
+        }
+
+        icon = os.path.join('icons', link_data['icon'])
+        resized = self.tmpfile(f'{trigger_object["uid"]}.png')
+        if not os.path.exists(resized):
+            base_icon = Image.open(icon)
+            width, height = base_icon.size
+            if width == height:
+                shutil.copyfile(icon, resized)
+            elif width > height:
+                new = Image.new('RGBA', (width, width))
+                new.paste(base_icon, (0, (width - height) // 2), base_icon)
+                new.save(resized)
+            else:
+                new = Image.new('RGBA', (height, height))
+                new.paste(base_icon, ((height - width) // 2, 0), base_icon)
+                new.save(resized)
+
+        self.metadata['objects'].append(trigger_object)
+        self.metadata['objects'].append(browser_object)
+
+        self.metadata['uidata'][trigger_object['uid']] = {
+            'xpos': 150,
+            'ypos': 50 + 120 * idx,
+        }
+        self.metadata['uidata'][browser_object['uid']] = {
+            'xpos': 600,
+            'ypos': 50 + 120 * idx,
+        }
+
+        self.metadata['connections'][trigger_object['uid']] = [
+            {
+                'destinationuid': browser_object['uid'],
+                'modifiers': 0,
+                'modifiersubtext': '',
+                'vitoclose': False,
+            }
+        ]
+
+    def _build_alfred_workflow_zip(self, name):
+        """
+        Given a directory of source files for an Alfred Workflow, assemble them
+        into a .alfredworkflow bundle.
+        """
+        shutil.make_archive(
+            base_name=f'{name}.alfredworkflow',
+            format='zip',
+            root_dir=self.tmpdir
+        )
+        shutil.move(f'{name}.alfredworkflow.zip', f'{name}.alfredworkflow')
+
+
+if __name__ == '__main__':
+    workflow = AlfredWorkflow(path='alfred-web-links.yml')
+    workflow.build(name='web-links')
