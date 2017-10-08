@@ -6,7 +6,6 @@ import plistlib
 import shutil
 import tempfile
 import uuid
-import zipfile
 
 from PIL import Image
 
@@ -132,14 +131,5 @@ for idx, resource in enumerate(aws_resources):
 shutil.copyfile('AWS-icon.png', os.path.join(t_dir, 'Icon.png'))
 plistlib.writePlist(data, os.path.join(t_dir, 'info.plist'))
 
-try:
-    os.unlink('AWS shortcuts.alfredworkflow')
-except FileNotFoundError:
-    pass
-
-with zipfile.ZipFile('shortcuts.alfredworkflow', 'w') as package:
-    os.chdir(t_dir)
-    for filename in os.listdir('.'):
-        if filename.startswith('.'):
-            continue
-        package.write(filename)
+shutil.make_archive('shortcuts.alfredworkflow', format='zip', root_dir=t_dir)
+shutil.move('shortcuts.alfredworkflow.zip', 'shortcuts.alfredworkflow')
