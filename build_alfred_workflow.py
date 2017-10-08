@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8
 
-import collections
 import os
 import plistlib
 import shutil
@@ -60,7 +59,7 @@ for idx, resource in enumerate(aws_resources):
     slug = names.get(resource, {}).get('slug', resource.lower())
     url = f'https://{aws_region}.console.aws.amazon.com/{slug}'
     if resource == 'ECR':
-        url = 'https://{aws_region}.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories'
+        url = 'https://{aws_region}.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories'  # noqa
     title = names.get(resource, {}).get('title', resource)
 
     trigger_object = {
@@ -88,26 +87,24 @@ for idx, resource in enumerate(aws_resources):
         'version': 1,
     }
 
-    if not os.path.exists(os.path.join('AWS shortcuts', f'{resource}_resized.png')):
-        base_icon = Image.open(os.path.join('AWS shortcuts', f'{resource}.png'))
+    original = os.path.join('AWS shortcuts', f'{resource}.png')
+    resized = os.path.join('AWS shortcuts', f'{resource}_resized.png')
+    if not os.path.exists(resized):
+        base_icon = Image.open(original)
         width, height = base_icon.size
         if width == height:
-            shutil.copyfile(
-                os.path.join('AWS shortcuts', f'{resource}.png'),
-                os.path.join('AWS shortcuts', f'{resource}_resized.png')
-            )
+            shutil.copyfile(original, resized)
         elif width > height:
             new = Image.new('RGBA', (width, width))
             new.paste(base_icon, (0, (width - height) // 2), base_icon)
-            new.save(os.path.join('AWS shortcuts', f'{resource}_resized.png'))
+            new.save(resized)
         else:
             new = Image.new('RGBA', (height, height))
             new.paste(base_icon, ((height - width) // 2, 0), base_icon)
-            new.save(os.path.join('AWS shortcuts', f'{resource}_resized.png'))
-        # assert False
+            new.save(resized)
 
     shutil.copyfile(
-        os.path.join('AWS shortcuts', f'{resource}_resized.png'),
+        resized,
         os.path.join(t_dir, f'{trigger_object["uid"]}.png')
     )
 

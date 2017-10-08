@@ -1,0 +1,18 @@
+language: sh
+
+sudo: required
+
+services:
+  - docker
+
+branches:
+  only:
+    - master
+
+script:
+  - make "$TASK"
+
+env:
+  matrix:
+    - TASK=shortcuts.alfredworkflow
+    - TASK=lint
