@@ -1,0 +1,21 @@
+language: sh
+
+sudo: required
+
+services:
+  - docker
+
+branches:
+  only:
+    - master
+
+script:
+  - make "$TASK"
+
+before_cache:
+  - .travis/before_cache.sh
+
+env:
+  matrix:
+    - TASK=shortcuts.alfredworkflow
+    - TASK=lint
