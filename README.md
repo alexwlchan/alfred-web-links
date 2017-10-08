@@ -5,6 +5,8 @@ More specifically, it lets me create web bookmarks by writing a YAML file.
 
 It creates a .alfredworkflow bundle.
 
+![](/screenshot.png)
+
 ## Why do this?
 
 1.  I wanted to see if I could build Alfred workflows programatically.
