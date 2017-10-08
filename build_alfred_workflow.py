@@ -54,7 +54,6 @@ yaml_data = yaml.load(open('alfred-shortcuts.yml'))
 data = load_initial_data(yaml_data)
 
 t_dir = tempfile.mkdtemp()
-icon_dir = tempfile.mkdtemp()
 
 for idx, shortcut_data in enumerate(yaml_data.get('shortcuts')):
     shortcut = shortcut_data['shortcut']
@@ -87,7 +86,7 @@ for idx, shortcut_data in enumerate(yaml_data.get('shortcuts')):
     }
 
     icon = os.path.join('icons', shortcut_data['icon'])
-    resized = os.path.join(icon_dir, f'{shortcut}_resized.png')
+    resized = os.path.join(t_dir, f'{trigger_object["uid"]}.png')
     if not os.path.exists(resized):
         base_icon = Image.open(icon)
         width, height = base_icon.size
@@ -101,11 +100,6 @@ for idx, shortcut_data in enumerate(yaml_data.get('shortcuts')):
             new = Image.new('RGBA', (height, height))
             new.paste(base_icon, ((height - width) // 2, 0), base_icon)
             new.save(resized)
-
-    shutil.move(
-        resized,
-        os.path.join(t_dir, f'{trigger_object["uid"]}.png')
-    )
 
     data['objects'].append(trigger_object)
     data['objects'].append(browser_object)
