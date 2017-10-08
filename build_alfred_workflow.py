@@ -25,8 +25,10 @@ def build_alfred_workflow(src_dir, name):
     return f'{name}.alfredworkflow'
 
 
-def load_initial_data(yaml_string):
-    yaml_data = yaml.load(yaml_string)
+def load_initial_data(yaml_data):
+    """
+    Given some YAML metadata, build the package-level metadata dict.
+    """
     defaults = {
         'bundleid': 'edu.self.alfred-shortcuts',
         'category': 'Internet',
@@ -48,44 +50,16 @@ def load_initial_data(yaml_string):
 
 aws_region = 'eu-west-1'
 
-metadata = open('alfred-shortcuts.yml').read()
-data = load_initial_data(metadata)
-
-aws_resources = sorted([
-    f[:-len('.png')]
-    for f in os.listdir('AWS shortcuts')
-    if f.endswith('.png')
-])
-
-names = {
-    'EMR': {
-        'title': 'Elastic MapReduce',
-        'slug': 'elasticmapreduce',
-    },
-    'ES': {
-        'title': 'Elasticsearch Service',
-    },
-    'AppStream': {
-        'slug': 'appstream2',
-    },
-    'ECS': {
-        'title': 'EC2 Container Service',
-    },
-    'ECR': {
-        'title': 'EC2 Container Registry',
-    },
-}
+yaml_data = yaml.load(open('alfred-shortcuts.yml'))
+data = load_initial_data(yaml_data)
 
 t_dir = tempfile.mkdtemp()
+icon_dir = tempfile.mkdtemp()
 
-for idx, resource in enumerate(aws_resources):
-
-    shortcut = names.get(resource, {}).get('shortcut', resource.lower())
-    slug = names.get(resource, {}).get('slug', resource.lower())
-    url = f'https://{aws_region}.console.aws.amazon.com/{slug}'
-    if resource == 'ECR':
-        url = 'https://{aws_region}.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories'  # noqa
-    title = names.get(resource, {}).get('title', resource)
+for idx, shortcut_data in enumerate(yaml_data.get('shortcuts')):
+    shortcut = shortcut_data['shortcut']
+    url = shortcut_data['url']
+    title = shortcut_data['title']
 
     trigger_object = {
         'config': {
@@ -112,10 +86,10 @@ for idx, resource in enumerate(aws_resources):
         'version': 1,
     }
 
-    original = os.path.join('AWS shortcuts', f'{resource}.png')
-    resized = os.path.join('AWS shortcuts', f'{resource}_resized.png')
+    icon = os.path.join('icons', shortcut_data['icon'])
+    resized = os.path.join(icon_dir, f'{shortcut}_resized.png')
     if not os.path.exists(resized):
-        base_icon = Image.open(original)
+        base_icon = Image.open(icon)
         width, height = base_icon.size
         if width == height:
             shutil.copyfile(original, resized)

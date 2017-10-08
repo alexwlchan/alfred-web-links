@@ -1,2 +1,8 @@
 bundleid: com.alexwlchan.alfred-shortcuts
 version: 0.1.0
+
+shortcuts:
+  - title: EC2 Container Registry
+    icon: ECR.png
+    shortcut: ecr
+    url: https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories
