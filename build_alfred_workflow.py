@@ -8,6 +8,7 @@ import tempfile
 import uuid
 
 from PIL import Image
+import yaml
 
 
 def build_alfred_workflow(src_dir, name):
@@ -22,6 +23,27 @@ def build_alfred_workflow(src_dir, name):
     )
     shutil.move(f'{name}.alfredworkflow.zip', f'{name}.alfredworkflow')
     return f'{name}.alfredworkflow'
+
+
+def load_initial_data(yaml_string):
+    yaml_data = yaml.load(yaml_string)
+    defaults = {
+        'bundleid': 'edu.self.alfred-shortcuts',
+        'category': 'Internet',
+        'connections': {},
+        'createdby': '',
+        'description': 'Shortcut links for Alfred',
+        'name': 'Alfred shortcuts',
+        'objects': [],
+        'readme': '',
+        'uidata': {},
+        'version': '0.0.1',
+        'webaddress': 'https://github.com/alexwlchan/alfred-shortcuts',
+    }
+
+    return {
+        key: yaml_data.get(key, defaults[key]) for key in defaults
+    }
 
 
 aws_region = 'eu-west-1'
