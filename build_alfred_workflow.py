@@ -117,7 +117,7 @@ for idx, resource in enumerate(aws_resources):
             new.paste(base_icon, ((height - width) // 2, 0), base_icon)
             new.save(resized)
 
-    shutil.copyfile(
+    shutil.move(
         resized,
         os.path.join(t_dir, f'{trigger_object["uid"]}.png')
     )
