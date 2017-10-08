@@ -12,9 +12,6 @@ branches:
 script:
   - make "$TASK"
 
-before_cache:
-  - .travis/before_cache.sh
-
 env:
   matrix:
     - TASK=shortcuts.alfredworkflow
