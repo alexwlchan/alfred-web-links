@@ -1,5 +1,6 @@
-*.alfredworkflow
+web-links.alfredworkflow
 .docker
+.icons
 
 # Created by https://www.gitignore.io/api/osx,python
 

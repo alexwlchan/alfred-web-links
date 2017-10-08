@@ -90,21 +90,8 @@ class AlfredWorkflow:
             'version': 1,
         }
 
-        icon = os.path.join('icons', link_data['icon'])
-        resized = self.tmpfile(f'{trigger_object["uid"]}.png')
-        if not os.path.exists(resized):
-            base_icon = Image.open(icon)
-            width, height = base_icon.size
-            if width == height:
-                shutil.copyfile(icon, resized)
-            elif width > height:
-                new = Image.new('RGBA', (width, width))
-                new.paste(base_icon, (0, (width - height) // 2), base_icon)
-                new.save(resized)
-            else:
-                new = Image.new('RGBA', (height, height))
-                new.paste(base_icon, ((height - width) // 2, 0), base_icon)
-                new.save(resized)
+        resized = self._resize_icon(link_data['icon'])
+        shutil.copyfile(resized, self.tmpfile(f'{trigger_object["uid"]}.png'))
 
         self.metadata['objects'].append(trigger_object)
         self.metadata['objects'].append(browser_object)
@@ -126,6 +113,41 @@ class AlfredWorkflow:
                 'vitoclose': False,
             }
         ]
+
+    def _resize_icon(self, filename):
+        """
+        Alfred icons have to be square, or they get blown up to fit the
+        space, regardless of original aspect ratio.  This method puts icons
+        on a square background with transparency, if necessary, to avoid
+        this ugly resizing.
+        """
+        original = os.path.join('icons', filename)
+
+        # We cache resized icons in .icons to avoid rebuilding them more
+        # than necessary.
+        resized = os.path.join('.icons', filename)
+        os.makedirs('.icons', exist_ok=True)
+
+        should_rebuild = (
+            not os.path.exists(resized) or
+            os.path.getmtime(resized) < os.path.getmtime(original)
+        )
+
+        if should_rebuild:
+            base_icon = Image.open(original)
+            width, height = base_icon.size
+            if width == height:
+                shutil.copyfile(original, resized)
+            elif width > height:
+                new = Image.new('RGBA', (width, width))
+                new.paste(base_icon, (0, (width - height) // 2), base_icon)
+                new.save(resized)
+            else:
+                new = Image.new('RGBA', (height, height))
+                new.paste(base_icon, ((height - width) // 2, 0), base_icon)
+                new.save(resized)
+
+        return resized
 
     def _build_alfred_workflow_zip(self, name):
         """
