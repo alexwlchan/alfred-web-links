@@ -9,6 +9,21 @@ import uuid
 
 from PIL import Image
 
+
+def build_alfred_workflow(src_dir, name):
+    """
+    Given a directory of source files for an Alfred Workflow, assemble them
+    into a .alfredworkflow bundle and return its path.
+    """
+    shutil.make_archive(
+        base_name=f'{name}.alfredworkflow',
+        format='zip',
+        root_dir=src_dir
+    )
+    shutil.move(f'{name}.alfredworkflow.zip', f'{name}.alfredworkflow')
+    return f'{name}.alfredworkflow'
+
+
 aws_region = 'eu-west-1'
 
 data = {
@@ -131,5 +146,4 @@ for idx, resource in enumerate(aws_resources):
 shutil.copyfile('AWS-icon.png', os.path.join(t_dir, 'Icon.png'))
 plistlib.writePlist(data, os.path.join(t_dir, 'info.plist'))
 
-shutil.make_archive('shortcuts.alfredworkflow', format='zip', root_dir=t_dir)
-shutil.move('shortcuts.alfredworkflow.zip', 'shortcuts.alfredworkflow')
+build_alfred_workflow(src_dir=t_dir, name='shortcuts')
