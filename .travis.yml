@@ -10,7 +10,6 @@ branches:
     - master
 
 script:
-  matrix:
   - make "$TASK"
 
 env:
