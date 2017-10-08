@@ -67,7 +67,7 @@ class AlfredWorkflow:
 
         trigger_object = {
             'config': {
-                'argumenttype': 2,
+                'argumenttype': 0 if r'{query}' in url else 2,
                 'keyword': shortcut,
                 'subtext': '',
                 'text': title,
