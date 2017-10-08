@@ -17,7 +17,7 @@ LINT_IMAGE = alexwlchan/flake8
 requirements.txt: requirements.in
 	docker run --volume $(ROOT):/src --rm --tty micktwomey/pip-tools
 
-data/web-links.alfredworkflow: .docker/build data
+data/web-links.alfredworkflow: .docker/build data/alfred-web-links.yml data/icons/*.png
 	docker run --volume $(ROOT)/data:/data --rm $(BUILD_IMAGE)
 
 lint: .docker/flake8
