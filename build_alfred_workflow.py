@@ -91,7 +91,7 @@ for idx, shortcut_data in enumerate(yaml_data.get('shortcuts')):
         base_icon = Image.open(icon)
         width, height = base_icon.size
         if width == height:
-            shutil.copyfile(original, resized)
+            shutil.copyfile(icon, resized)
         elif width > height:
             new = Image.new('RGBA', (width, width))
             new.paste(base_icon, (0, (width - height) // 2), base_icon)
