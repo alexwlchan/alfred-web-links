@@ -1,0 +1,50 @@
+bundleid: com.alexwlchan.alfred-shortcuts
+version: 0.1.0
+
+shortcuts:
+
+  # Links to the AWS console
+  - title:    CloudWatch
+    icon:     cloudwatch.png
+    shortcut: cloudwatch
+    url:      https://eu-west-1.console.aws.amazon.com/cloudwatch
+  - title:    DynamoDB
+    icon:     dynamodb.png
+    shortcut: dynamodb
+    url:      https://eu-west-1.console.aws.amazon.com/dynamodb
+  - title:    EC2
+    icon:     ec2.png
+    shortcut: ec2
+    url:      https://eu-west-1.console.aws.amazon.com/ec2
+  - title:    EC2 Container Registry
+    icon:     ecr.png
+    shortcut: ecr
+    url:      https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories
+  - title:    EC2 Container Service
+    icon:     ecs.png
+    shortcut: ecs
+    url:      https://eu-west-1.console.aws.amazon.com/ecs
+  - title:    Glacier
+    icon:     glacier.png
+    shortcut: glacier
+    url:      https://eu-west-1.console.aws.amazon.com/glacier
+  - title:    IAM
+    icon:     iam.png
+    shortcut: iam
+    url:      https://eu-west-1.console.aws.amazon.com/iam
+  - title:    AWS Lambda
+    icon:     lambda.png
+    shortcut: lambda
+    url:      https://eu-west-1.console.aws.amazon.com/lambda
+  - title:    S3
+    icon:     s3.png
+    shortcut: s3
+    url:      https://eu-west-1.console.aws.amazon.com/s3
+  - title:    SNS
+    icon:     sns.png
+    shortcut: sns
+    url:      https://eu-west-1.console.aws.amazon.com/sns
+  - title:    SQS
+    icon:     sqs.png
+    shortcut: sqs
+    url:      https://eu-west-1.console.aws.amazon.com/sqs

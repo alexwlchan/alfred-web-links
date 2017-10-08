@@ -6,61 +6,59 @@ import plistlib
 import shutil
 import tempfile
 import uuid
-import zipfile
 
 from PIL import Image
+import yaml
+
+
+def build_alfred_workflow(src_dir, name):
+    """
+    Given a directory of source files for an Alfred Workflow, assemble them
+    into a .alfredworkflow bundle and return its path.
+    """
+    shutil.make_archive(
+        base_name=f'{name}.alfredworkflow',
+        format='zip',
+        root_dir=src_dir
+    )
+    shutil.move(f'{name}.alfredworkflow.zip', f'{name}.alfredworkflow')
+    return f'{name}.alfredworkflow'
+
+
+def load_initial_data(yaml_data):
+    """
+    Given some YAML metadata, build the package-level metadata dict.
+    """
+    defaults = {
+        'bundleid': 'edu.self.alfred-shortcuts',
+        'category': 'Internet',
+        'connections': {},
+        'createdby': '',
+        'description': 'Shortcut links for Alfred',
+        'name': 'Alfred shortcuts',
+        'objects': [],
+        'readme': '',
+        'uidata': {},
+        'version': '0.0.1',
+        'webaddress': 'https://github.com/alexwlchan/alfred-shortcuts',
+    }
+
+    return {
+        key: yaml_data.get(key, defaults[key]) for key in defaults
+    }
+
 
 aws_region = 'eu-west-1'
 
-data = {
-    'bundleid': 'com.alexwlchan.aws-shortcuts',
-    'category': 'Internet',
-    'connections': {},
-    'createdby': 'Alex Chan',
-    'description': f'Shortcuts for the AWS console ({aws_region})',
-    'name': 'AWS shortcuts',
-    'objects': [],
-    'readme': '',
-    'uidata': {},
-    'version': '0.0.1',
-    'webaddress': 'https://github.com/alexwlchan/alfred-aws-shortcuts',
-}
-
-aws_resources = sorted([
-    f[:-len('.png')]
-    for f in os.listdir('AWS shortcuts')
-    if f.endswith('.png')
-])
-
-names = {
-    'EMR': {
-        'title': 'Elastic MapReduce',
-        'slug': 'elasticmapreduce',
-    },
-    'ES': {
-        'title': 'Elasticsearch Service',
-    },
-    'AppStream': {
-        'slug': 'appstream2',
-    },
-    'ECS': {
-        'title': 'EC2 Container Service',
-    },
-    'ECR': {
-        'title': 'EC2 Container Registry',
-    },
-}
+yaml_data = yaml.load(open('alfred-shortcuts.yml'))
+data = load_initial_data(yaml_data)
 
 t_dir = tempfile.mkdtemp()
 
-for idx, resource in enumerate(aws_resources):
-
-    shortcut = names.get(resource, {}).get('shortcut', resource.lower())
-    slug = names.get(resource, {}).get('slug', resource.lower())
-    url = f'https://{aws_region}.console.aws.amazon.com/{slug}'
-    if resource == 'ECR':
-        url = 'https://{aws_region}.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories'  # noqa
-    title = names.get(resource, {}).get('title', resource)
+for idx, shortcut_data in enumerate(yaml_data.get('shortcuts')):
+    shortcut = shortcut_data['shortcut']
+    url = shortcut_data['url']
+    title = shortcut_data['title']
 
     trigger_object = {
         'config': {
@@ -87,13 +85,13 @@ for idx, resource in enumerate(aws_resources):
         'version': 1,
     }
 
-    original = os.path.join('AWS shortcuts', f'{resource}.png')
-    resized = os.path.join('AWS shortcuts', f'{resource}_resized.png')
+    icon = os.path.join('icons', shortcut_data['icon'])
+    resized = os.path.join(t_dir, f'{trigger_object["uid"]}.png')
     if not os.path.exists(resized):
-        base_icon = Image.open(original)
+        base_icon = Image.open(icon)
         width, height = base_icon.size
         if width == height:
-            shutil.copyfile(original, resized)
+            shutil.copyfile(icon, resized)
         elif width > height:
             new = Image.new('RGBA', (width, width))
             new.paste(base_icon, (0, (width - height) // 2), base_icon)
@@ -103,21 +101,16 @@ for idx, resource in enumerate(aws_resources):
             new.paste(base_icon, ((height - width) // 2, 0), base_icon)
             new.save(resized)
 
-    shutil.copyfile(
-        resized,
-        os.path.join(t_dir, f'{trigger_object["uid"]}.png')
-    )
-
     data['objects'].append(trigger_object)
     data['objects'].append(browser_object)
 
     data['uidata'][trigger_object['uid']] = {
-        'xpos': 50 + (400 * (idx % 2)),
-        'ypos': 50 + 75 * (idx - idx % 2),
+        'xpos': 150,
+        'ypos': 50 + 120 * idx,
     }
     data['uidata'][browser_object['uid']] = {
-        'xpos': 250 + (400 * (idx % 2)),
-        'ypos': 50 + 75 * (idx - idx % 2),
+        'xpos': 600,
+        'ypos': 50 + 120 * idx,
     }
 
     data['connections'][trigger_object['uid']] = [
@@ -132,14 +125,4 @@ for idx, resource in enumerate(aws_resources):
 shutil.copyfile('AWS-icon.png', os.path.join(t_dir, 'Icon.png'))
 plistlib.writePlist(data, os.path.join(t_dir, 'info.plist'))
 
-try:
-    os.unlink('AWS shortcuts.alfredworkflow')
-except FileNotFoundError:
-    pass
-
-with zipfile.ZipFile('shortcuts.alfredworkflow', 'w') as package:
-    os.chdir(t_dir)
-    for filename in os.listdir('.'):
-        if filename.startswith('.'):
-            continue
-        package.write(filename)
+build_alfred_workflow(src_dir=t_dir, name='shortcuts')

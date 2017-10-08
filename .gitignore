@@ -1,5 +1,4 @@
 *.alfredworkflow
-*_resized.png
 .docker
 
 # Created by https://www.gitignore.io/api/osx,python
