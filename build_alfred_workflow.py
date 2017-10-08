@@ -71,7 +71,7 @@ class AlfredWorkflow:
                 'keyword': shortcut,
                 'subtext': '',
                 'text': title,
-                'withspace': False,
+                'withspace': (r'{query}' in url),
             },
             'type': 'alfred.workflow.input.keyword',
             'uid': str(uuid.uuid4()).upper(),
