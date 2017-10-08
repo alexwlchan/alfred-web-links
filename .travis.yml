@@ -11,5 +11,9 @@ branches:
 
 script:
   matrix:
-    - make
-    - make lint
+  - make "$TASK"
+
+env:
+  matrix:
+    - TASK=data/web-links.alfredworkflow
+    - TASK=lint
