@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- encoding: utf-8
 
 import collections
@@ -140,7 +140,7 @@ try:
 except FileNotFoundError:
     pass
 
-with zipfile.ZipFile('AWS shortcuts.alfredworkflow', 'w') as package:
+with zipfile.ZipFile('shortcuts.alfredworkflow', 'w') as package:
     os.chdir(t_dir)
     for filename in os.listdir('.'):
         if filename.startswith('.'):
