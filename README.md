@@ -26,7 +26,7 @@ To build the workflow:
 
 ```console
 $ git clone git@github.com:alexwlchan/alfred-web-links.git
-$ make data/web-links.alfredworkflow
+$ make
 ```
 
 You then open web-links.alfredworkflow and install it in Alfred.

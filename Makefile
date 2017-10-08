@@ -24,4 +24,6 @@ lint: .docker/flake8
 	docker run --volume $(ROOT):/src --rm --tty $(LINT_IMAGE)
 
 
+.DEFAULT_GOAL: data/web-links.alfredworkflow
+
 .PHONY: lint
