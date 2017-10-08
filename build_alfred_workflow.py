@@ -105,12 +105,12 @@ for idx, shortcut_data in enumerate(yaml_data.get('shortcuts')):
     data['objects'].append(browser_object)
 
     data['uidata'][trigger_object['uid']] = {
-        'xpos': 50 + (400 * (idx % 2)),
-        'ypos': 50 + 75 * (idx - idx % 2),
+        'xpos': 150,
+        'ypos': 50 + 120 * idx,
     }
     data['uidata'][browser_object['uid']] = {
-        'xpos': 250 + (400 * (idx % 2)),
-        'ypos': 50 + 75 * (idx - idx % 2),
+        'xpos': 600,
+        'ypos': 50 + 120 * idx,
     }
 
     data['connections'][trigger_object['uid']] = [
