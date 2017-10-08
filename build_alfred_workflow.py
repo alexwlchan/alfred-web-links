@@ -48,19 +48,8 @@ def load_initial_data(yaml_string):
 
 aws_region = 'eu-west-1'
 
-data = {
-    'bundleid': 'com.alexwlchan.aws-shortcuts',
-    'category': 'Internet',
-    'connections': {},
-    'createdby': 'Alex Chan',
-    'description': f'Shortcuts for the AWS console ({aws_region})',
-    'name': 'AWS shortcuts',
-    'objects': [],
-    'readme': '',
-    'uidata': {},
-    'version': '0.0.1',
-    'webaddress': 'https://github.com/alexwlchan/alfred-aws-shortcuts',
-}
+metadata = open('alfred-shortcuts.yml').read()
+data = load_initial_data(metadata)
 
 aws_resources = sorted([
     f[:-len('.png')]
