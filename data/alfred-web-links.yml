@@ -74,7 +74,7 @@ links:
     icon:     docker.png
     shortcut: dock
     url:      https://hub.docker.com/search/?q={query}
-  - title:    "Search APK package repos for '{query}'"
+  - title:    "Search Alpine package repos for '{query}'"
     icon:     apk.png
     shortcut: apk
     url:      https://pkgs.alpinelinux.org/packages?name=*{query}*&repo=all&arch=x86_64&maintainer=all
