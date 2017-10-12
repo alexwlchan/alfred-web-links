@@ -78,3 +78,21 @@ links:
     icon:     apk.png
     shortcut: apk
     url:      https://pkgs.alpinelinux.org/packages?name=*{query}*&repo=all&arch=x86_64&maintainer=all
+
+  # Links to common GitHub repos
+  - title:    "wellcometrust/platform"
+    icon:     github.png
+    shortcut: api
+    url:      https://github.com/wellcometrust/platform
+  - title:    "HypothesisWorks/hypothesis-python"
+    icon:     github.png
+    shortcut: hyp
+    url:      https://github.com/HypothesisWorks/hypothesis-python
+  - title:    "python-hyper/hyper-h2"
+    icon:     github.png
+    shortcut: hyp
+    url:      https://github.com/python-hyper/hyper-h2
+  - title:    "loris-imageserver/loris"
+    icon:     github.png
+    shortcut: hyp
+    url:      https://github.com/loris-imageserver/loris
