@@ -30,7 +30,7 @@ class AlfredWorkflow:
             self._add_link(idx=idx, link_data=link_data)
             idx += 1
 
-        for github_link in self.yaml_data.get('github', []):
+        for github_data in self.yaml_data.get('github', []):
             self._add_link(idx=idx, link_data={
                 'title': f'{github_data["owner"]}/{github_data["repo"]}',
                 'icon': 'github.png',
