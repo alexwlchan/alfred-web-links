@@ -35,7 +35,7 @@ class AlfredWorkflow:
                 'title': f'{github_data["owner"]}/{github_data["repo"]}',
                 'icon': 'github.png',
                 'shortcut': github_data['shortcut'],
-                'url': f'https://github.com/{github_data["owner"]}/{github_data["repo"]}'
+                'url': f'https://github.com/{github_data["owner"]}/{github_data["repo"]}'  # noqa
             })
             idx += 1
 
