@@ -25,8 +25,19 @@ class AlfredWorkflow:
     def build(self, name):
         self.metadata = self._get_package_metadata()
 
-        for idx, link_data in enumerate(self.yaml_data['links']):
+        idx = 0
+        for link_data in self.yaml_data['links']:
             self._add_link(idx=idx, link_data=link_data)
+            idx += 1
+
+        for github_link in self.yaml_data.get('github', []):
+            self._add_link(idx=idx, link_data={
+                'title': f'{github_data["owner"]}/{github_data["repo"]}',
+                'icon': 'github.png',
+                'shortcut': github_data['shortcut'],
+                'url': f'https://github.com/{github_data["owner"]}/{github_data["repo"]}'
+            })
+            idx += 1
 
         self._copy_workflow_icon()
         plistlib.writePlist(self.metadata, self.tmpfile('Info.plist'))
