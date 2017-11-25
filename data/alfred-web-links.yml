@@ -83,6 +83,20 @@ links:
     shortcut: apk
     url:      https://pkgs.alpinelinux.org/packages?name=*{query}*&repo=all&arch=x86_64&maintainer=all
 
+  # Social websites
+  - title:    Pinboard
+    icon:     pinboard.png
+    shortcut: pin
+    url:      https://pinboard.in/u:alexwlchan
+  - title:    "Search Pinboard for '{query}'"
+    icon:     pinboard.png
+    shortcut: pin
+    url:      https://pinboard.in/search/u:alexwlchan?query={query}&fulltext=on
+  - title:    Blogtrottr
+    icon:     blogtrottr.png
+    shortcut: blog
+    url:      https://blogtrottr.com/
+
 github:
   - owner:    wellcometrust
     repo:     platform
