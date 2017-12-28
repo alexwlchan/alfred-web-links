@@ -88,10 +88,10 @@ links:
     icon:     pinboard.png
     shortcut: pin
     url:      https://pinboard.in/u:alexwlchan
-  - title:    "Search Pinboard for '{query}'"
-    icon:     pinboard.png
+  - title:    "Search Pincushion for '{query}'"
+    icon:     pincushion.png
     shortcut: pin
-    url:      https://pinboard.in/search/u:alexwlchan?query={query}&fulltext=on
+    url:      https://pincushion.alexwlchan.net/?query={query}
   - title:    Blogtrottr
     icon:     blogtrottr.png
     shortcut: blog
